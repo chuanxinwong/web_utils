@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <!-- <script type="module" src="../src/ImageCompression/index.js"></script> -->
+</head>
+
+<body>
+
+
+  <h1>ImageCompression</h1>
+
+  <div>
+    <h3>选择一张图片</h3>
+    <input id="file" type="file" accept="image/*">
+  </div>
+
+
+
+</body>
+
+<script>
+
+
+
+
+</script>
+
+<script type="module">
+  import ImageCompression from "../src/ImageCompression/index.js";
+
+  var fileinput = document.getElementById("file");
+  fileinput.onchange = function (e) {
+    console.log(e)
+    var file = e.target.files[0];
+    console.log(file)
+
+    new ImageCompression(file, { width: 300 })
+  }
+
+
+</script>
+
+
+</html>
