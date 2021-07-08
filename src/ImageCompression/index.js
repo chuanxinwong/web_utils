@@ -4,14 +4,13 @@ class ImageCompression {
 
   /**
    * 
-   * @param {File | HTMLImageElement} file ： input 选择的文件对象
    * @param {Object} ops : 
    * @param {Number} ops.width : 压缩后的宽度 与 height 可以二选一， 如果都填写， 可能会比例被压缩
    * @param {Number} ops.height : 压缩后的高度 
    */
-  constructor(file, ops) {
-    this.file = file;
+  constructor(ops) {
     this.ops = ops;
+    this.file = null;
 
     // 目标尺寸
     this.targetWidth = null;
@@ -22,57 +21,73 @@ class ImageCompression {
 
 
   init() {
-    var { file } = this;
-
     var canvas = document.createElement("canvas");
     var cc = canvas.getContext("2d");
 
     this.canvas = canvas;
     this.cc = cc;
-
-    if (file instanceof HTMLImageElement) {
-      this.readyImage();
-    } else if (file instanceof File) {
-      this.readyFile();
-    }
   }
+
+
+
+  /**
+   * 
+   * @param { File | HTMLImageElement} file ： input 选择的文件对象
+   */
+  compression(file) {
+    this.file = file;
+
+    var pros = null;
+    if (file instanceof HTMLImageElement) {
+      pros = this.readyImage();
+    } else if (file instanceof File) {
+      pros = this.readyFile();
+    }
+
+    console.log(pros)
+
+    return pros.then(img => {
+      this.calcTargetSize(img);
+
+      var { canvas, cc } = this;
+      var { canvas, cc, targetWidth, targetHeight } = this;
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      cc.clearRect(0, 0, targetWidth, targetHeight);
+      cc.drawImage(img, 0, 0, targetWidth, targetHeight);
+      return this;
+    })
+  }
+
 
   // 准备压缩 File
   readyFile() {
     var { file } = this;
 
-    var image = new Image();
-    image.onload = (e) => {
-      this.compression(image);
-    }
+    return new Promise((resolve, reject) => {
+      var image = new Image();
+      image.onload = (e) => {
+        resolve(image);
+      }
 
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      var src = e?.target?.result || null;
-      image.src = src;
-    };
-    reader.readAsDataURL(file);
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        var src = e?.target?.result || null;
+        image.src = src;
+      };
+      reader.readAsDataURL(file);
+    })
+
+
   }
 
   // 准备压缩 Image
   readyImage() {
     var { file } = this;
-    this.compression(file);
-  }
-
-
-
-  compression(img) {
-    this.calcTargetSize(img);
-
-    var { canvas, cc } = this;
-    var { canvas, cc, targetWidth, targetHeight } = this;
-
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-
-    cc.clearRect(0, 0, targetWidth, targetHeight);
-    cc.drawImage(img, 0, 0, targetWidth, targetHeight);
+    // this.compression(file);
+    return Promise.resolve(file);
   }
 
 
@@ -110,8 +125,9 @@ class ImageCompression {
 
 
 
-  getBlob() {
+  getBlob(fun) {
     var { canvas, file } = this;
+
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         resolve(blob);
@@ -122,6 +138,7 @@ class ImageCompression {
 
   getDataURL() {
     var { canvas, file } = this;
+
     return new Promise((resolve, reject) => {
       var dataurl = canvas.toDataURL(file.type);
       resolve(dataurl)
