@@ -1,11 +1,10 @@
 
-
 class ImageCompression {
 
 
   /**
    * 
-   * @param {File} file ： input 选择的文件对象
+   * @param {File | HTMLImageElement} file ： input 选择的文件对象
    * @param {Object} ops : 
    * @param {Number} ops.width : 压缩后的宽度 与 height 可以二选一， 如果都填写， 可能会比例被压缩
    * @param {Number} ops.height : 压缩后的高度 
@@ -14,6 +13,9 @@ class ImageCompression {
     this.file = file;
     this.ops = ops;
 
+    // 目标尺寸
+    this.targetWidth = null;
+    this.targetHeight = null;
 
     this.init();
   }
@@ -22,6 +24,22 @@ class ImageCompression {
   init() {
     var { file } = this;
 
+    var canvas = document.createElement("canvas");
+    var cc = canvas.getContext("2d");
+
+    this.canvas = canvas;
+    this.cc = cc;
+
+    if (file instanceof HTMLImageElement) {
+      this.readyImage();
+    } else if (file instanceof File) {
+      this.readyFile();
+    }
+  }
+
+  // 准备压缩 File
+  readyFile() {
+    var { file } = this;
 
     var image = new Image();
     image.onload = (e) => {
@@ -30,27 +48,38 @@ class ImageCompression {
 
     var reader = new FileReader();
     reader.onload = function (e) {
-      console.log(e)
       var src = e?.target?.result || null;
-      // @ts-ignore
       image.src = src;
     };
     reader.readAsDataURL(file);
+  }
 
-
-    var canvas = document.createElement("canvas");
-    var cc = canvas.getContext("2d");
-
-    this.canvas = canvas;
-    this.cc = cc;
+  // 准备压缩 Image
+  readyImage() {
+    var { file } = this;
+    this.compression(file);
   }
 
 
+
   compression(img) {
+    this.calcTargetSize(img);
 
-    var { canvas, cc, ops, file } = this;
+    var { canvas, cc } = this;
+    var { canvas, cc, targetWidth, targetHeight } = this;
+
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+
+    cc.clearRect(0, 0, targetWidth, targetHeight);
+    cc.drawImage(img, 0, 0, targetWidth, targetHeight);
+  }
+
+
+  // 计算压缩后的宽高
+  calcTargetSize(img) {
+    var { ops } = this;
     var { width, height } = img;
-
     // 计算压缩后的宽高
 
     var targetWidth = width;
@@ -66,32 +95,38 @@ class ImageCompression {
 
     if (ops.height < height && ops.height) {
       var ratio = ops.height / height;
-      targetWidth = ratio * width;
+      targetHeight = ratio * height;
       if (!ops.width) {
-        targetHeight = ratio * height;
+        targetWidth = ratio * width;
       }
     }
-
-    console.log(targetWidth, targetHeight);
 
     console.log("原始尺寸：", width, height);
     console.log("压缩尺寸：", targetWidth, targetHeight);
 
-
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-
-    cc.clearRect(0, 0, targetWidth, targetHeight);
-    cc.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-
-    canvas.toBlob(function (blob) {
-      // 图片ajax上传
-      console.log(blob)
-    }, file.type || 'image/png');
-
+    this.targetWidth = targetWidth;
+    this.targetHeight = targetHeight;
   }
 
+
+
+  getBlob() {
+    var { canvas, file } = this;
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, file.type);
+    });
+  }
+
+
+  getDataURL() {
+    var { canvas, file } = this;
+    return new Promise((resolve, reject) => {
+      var dataurl = canvas.toDataURL(file.type);
+      resolve(dataurl)
+    });
+  }
 
 }
 
