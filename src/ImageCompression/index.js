@@ -116,11 +116,11 @@ class ImageCompression {
       }
     }
 
-    console.log("原始尺寸：", width, height);
-    console.log("压缩尺寸：", targetWidth, targetHeight);
-
     this.targetWidth = targetWidth;
     this.targetHeight = targetHeight;
+
+    console.log("原始尺寸：", width, height);
+    console.log("压缩尺寸：", targetWidth, targetHeight);
   }
 
 
