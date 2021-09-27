@@ -3,10 +3,11 @@
  * @param {*} img 
  * @param {*} wh 
  */
-export default function(img, wh) {
+export default function() {
 
+  var { img, targetWH,  } = this;
   var { canvas, cc } = this;
-  var [targetWidth, targetHeight] = wh;
+  var [targetWidth, targetHeight] = targetWH;
   var { width, height } = img;
 
   console.log("原始尺寸",width, height);

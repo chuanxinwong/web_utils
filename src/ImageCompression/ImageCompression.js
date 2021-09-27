@@ -34,14 +34,11 @@ class ImageCompression {
 
     return read.call(this)
       .then((img) => {
-        var wh = calcTargetSize(img, this.options);
-        this.targetWH = wh;
+        this.img = img;
+        calcTargetSize.call(this);
       })
       .then(res => {
-        return compression.call(this, img, wh)
-      })
-      .then(() => {
-        console.log(this)
+        compression.call(this)
         return this;
       })
   }
@@ -67,6 +64,9 @@ class ImageCompression {
   }
 
 }
+
+
+console.log(ImageCompression.prototype)
 
 
 export default ImageCompression

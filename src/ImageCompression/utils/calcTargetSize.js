@@ -4,9 +4,10 @@
  * @param {*} ops 
  */
 export default function(img, ops) {
+  var { img, options } = this;
   var iw = img.width;
   var ih = img.height;
-  var { width, height, maxWidth, maxHeight } = ops;
+  var { width, height, maxWidth, maxHeight } = options;
 
   var arr = [];
 
@@ -49,7 +50,7 @@ export default function(img, ops) {
     })
   }
 
-  // console.log(filtet)
 
-  return filtet[0];
+  this.targetWH = filtet[0];
+  // return filtet[0];
 }
