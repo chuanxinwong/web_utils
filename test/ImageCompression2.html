@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <h1>ImageCompression2</h1>
+
+  <div>
+    <h3>选择一张图片</h3>
+    <input id="file" type="file" accept="image/*">
+  </div>
+
+  <hr>
+
+  <div>
+    <img id="source" src="./imgs/5001.png" alt="" srcset="">
+  </div>
+
+  <div class="result">
+    <img id="resdata" src="" alt="">
+    <img id="resblob" src="" alt="">
+  </div>
+</body>
+
+<script>
+
+
+
+</script>
+
+<script type="module">
+  import ImageCompression from "../src/ImageCompression/ImageCompression.js";
+
+
+  // 选择文件压缩
+  var fileinput = document.getElementById("file");
+  fileinput.onchange = function (e) {
+    console.log(e)
+    var file = e.target.files[0];
+
+    var source = document.getElementById("source");
+    source.src = window.URL.createObjectURL(file);
+
+    run(file);
+  }
+
+
+  // 使用 img 压缩
+  setTimeout(() => {
+    var img = document.getElementById("source");
+    run(img);
+  }, 100)
+
+
+  function run(file) {
+
+    var ops = {
+      width: 500,
+      height: 200,
+      maxWidth: 600,
+      maxHeight: 400
+    }
+    new ImageCompression(file)
+      .compression(ops)
+      .then(ic => {
+        console.log(ic)
+        ic.getBlob()
+          .then(res => {
+            // console.log(res)
+            document.getElementById("resblob").src = window.URL.createObjectURL(res);
+          })
+        ic.getDataURL()
+          .then(res => {
+            // console.log(res)
+            document.getElementById("resdata").src = res;
+          })
+      })
+  }
+
+
+</script>
+
+
+</html>
