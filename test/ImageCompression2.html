@@ -28,15 +28,8 @@
   </div>
 </body>
 
-<script>
-
-
-
-</script>
-
 <script type="module">
   import ImageCompression from "../src/ImageCompression/ImageCompression.js";
-
 
   // 选择文件压缩
   var fileinput = document.getElementById("file");
@@ -66,21 +59,35 @@
       maxWidth: 600,
       maxHeight: 400
     }
-    new ImageCompression(file)
+    var temp = new ImageCompression(file)
       .compression(ops)
-      .then(ic => {
-        console.log(ic)
-        ic.getBlob()
-          .then(res => {
-            // console.log(res)
-            document.getElementById("resblob").src = window.URL.createObjectURL(res);
-          })
-        ic.getDataURL()
-          .then(res => {
-            // console.log(res)
-            document.getElementById("resdata").src = res;
-          })
+      .getBlob(res => {
+        console.log(111)
+        console.log(res)
       })
+      .getDataURL(res => {
+        console.log(2222)
+        // console.log(res)
+      })
+      .getInfo(res => {
+        console.log(3333)
+        console.log(res)
+      })
+
+      console.log(temp)
+    // .then(ic => {
+    //   console.log(ic)
+    //   ic.getBlob()
+    //     .then(res => {
+    //       // console.log(res)
+    //       document.getElementById("resblob").src = window.URL.createObjectURL(res);
+    //     })
+    //   ic.getDataURL()
+    //     .then(res => {
+    //       // console.log(res)
+    //       document.getElementById("resdata").src = res;
+    //     })
+    // })
   }
 
 

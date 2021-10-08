@@ -10,7 +10,8 @@ class ImageCompression {
    * @param { File | HTMLImageElement} file ： input 选择的文件对象
    */
   constructor(imgFile) {
-    this.imgFile = imgFile
+    this.imgFile = imgFile;
+    this.task = null;
 
     init.call(this);
   }
@@ -32,35 +33,51 @@ class ImageCompression {
     this.ops = ops;
     this.options = Object.assign({}, config, ops);
 
-    return read.call(this)
+    this.task = read.call(this)
       .then((img) => {
         this.img = img;
         calcTargetSize.call(this);
       })
       .then(res => {
         compression.call(this)
-        return this;
       })
+
+    return this;
   }
 
 
   getBlob(fun) {
-    var { canvas, options } = this;
-    return new Promise((resolve, reject) => {
+    var { canvas, options, task } = this;
+    task.then(res => {
       canvas.toBlob((blob) => {
-        resolve(blob);
+        fun(blob);
       }, options.mime, options.quality);
-    });
+    })
+    return this;
   }
 
 
-  getDataURL() {
-    var { canvas, options } = this;
-
-    return new Promise((resolve, reject) => {
+  getDataURL(fun) {
+    var { canvas, options, task } = this;
+    task.then(res => {
       var dataurl = canvas.toDataURL(options.mime, options.quality);
-      resolve(dataurl)
-    });
+      fun(dataurl)
+    })
+    return this;
+  }
+
+  getInfo(fun) {
+    this.task.then(res => {
+      var { imgWidth, imgHeight, targetWH } = this;
+      var mod = {
+        sourceWidth: imgWidth,
+        sourceHeight: imgHeight,
+        targetWidth: targetWH[0],
+        targetHeight: targetWH[1],
+      }
+      fun(mod)
+    })
+    return this;
   }
 
 }
