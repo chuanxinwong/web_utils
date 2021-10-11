@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Document</title>
+  <style>
+    * {
+      /* margin: 0; */
+      /* padding: 0; */
+    }
+
+    .draw {
+      width: 512px;
+      height: 512px;
+      background-color: #eee;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="draw"></div>
+
+</body>
+<script type="module">
+  import Drawing from "../src/Drawing/Drawing.js";
+
+  var ops = {
+    el: document.querySelector(".draw"),
+    petal: 4,
+  };
+  new Drawing(ops)
+
+</script>
+
+</html>
